@@ -39,12 +39,12 @@ export default async function Footer() {
           <p className="max-w-[336px] text-[15px] leading-[25.2px]">{description}</p>
         </div>
 
-        <div data-reveal className="flex flex-col gap-12 lg:pt-[5px] [--reveal-delay:120ms]">
+        <div data-reveal className="flex flex-col gap-8 lg:pt-[5px] [--reveal-delay:120ms]">
           <nav aria-labelledby="footer-quick-links" className="flex flex-col gap-6">
             <h2 id="footer-quick-links" className="text-[15px] leading-[25.2px] uppercase">
               Quick Links
             </h2>
-            <ul className="flex flex-wrap gap-x-[6px] gap-y-2 text-[15px] leading-[25.2px] uppercase">
+            <ul className="flex flex-col items-start gap-[6px] text-[15px] leading-[25.2px] uppercase">
               {QUICK_LINKS.map((link) => (
                 <li key={link.href}>
                   <Link href={link.href} className="transition-colors hover:text-yellow">

@@ -21,6 +21,13 @@ export type CaseStudyCard = {
 const EXPANDED_GROW = 1019;
 const COLLAPSED_GROW = 251;
 
+/**
+ * While a card is hovered (desktop only), its dark overlay and text fade out so
+ * only the photo shows; they fade back in when the pointer leaves.
+ */
+const HOVER_FADE =
+  "lg:transition-opacity lg:duration-300 lg:ease-out lg:group-hover:opacity-0 motion-reduce:transition-none";
+
 export default function CaseStudyCarousel({ items }: { items: CaseStudyCard[] }) {
   const [active, setActive] = useState(0);
 
@@ -57,7 +64,10 @@ function CardBody({ item }: { item: CaseStudyCard }) {
             sizes="(min-width: 1024px) 60vw, 85vw"
             className="object-cover"
           />
-          <div aria-hidden className="absolute inset-0 bg-black/80" />
+          <div
+            aria-hidden
+            className={`absolute inset-0 bg-black/80 ${HOVER_FADE}`}
+          />
         </>
       ) : (
         <div aria-hidden className="absolute inset-0 bg-blue" />
@@ -65,7 +75,11 @@ function CardBody({ item }: { item: CaseStudyCard }) {
 
       {/* Mobile: copy stacks at the bottom. Desktop: copy and metric are pinned
           independently (top 425px / bottom 50px, per Figma) so every card lines up. */}
-      <div className="absolute inset-x-5 bottom-8 flex flex-col gap-8 md:inset-x-10 lg:inset-0">
+      <div
+        className={`absolute inset-x-5 bottom-8 flex flex-col gap-8 md:inset-x-10 lg:inset-0 ${
+          item.imageSrc ? HOVER_FADE : ""
+        }`}
+      >
         <div className="flex flex-col items-start gap-4 lg:absolute lg:top-[425px] lg:left-10">
           {item.sector && (
             <span className="rounded-full bg-hairline px-3 py-1 text-[18px] leading-[1.35] font-light whitespace-nowrap text-blue">

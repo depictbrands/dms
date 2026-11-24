@@ -62,12 +62,15 @@ const FALLBACK_CARDS: ServiceCardData[] = [
 const COLOR_CYCLE: ServiceCardColor[] = ["green", "yellow", "blue"];
 
 function toCard(card: ServiceCardContent, index: number): ServiceCardData | null {
-  if (!card.title && !card.description && !card.services?.length) return null;
+  if (!card.title && !card.description && !card.iconUrl && !card.services?.length) return null;
   return {
     id: card._key,
     color: card.color ?? COLOR_CYCLE[index % COLOR_CYCLE.length],
     title: card.title ?? "",
     description: card.description ?? undefined,
+    icon: card.iconUrl
+      ? { src: card.iconUrl, aspectRatio: card.iconAspectRatio ?? 1 }
+      : undefined,
     services: (card.services ?? []).map((service) => ({
       id: service._key,
       title: service.title ?? undefined,

@@ -9,8 +9,14 @@ export type ServiceCardData = {
   color: ServiceCardColor;
   title: string;
   description?: string;
+  /** Uploaded in Sanity; recoloured to the card's text colour via a CSS mask. */
+  icon?: { src: string; aspectRatio: number };
   services: { id: string; title?: string; description?: string }[];
 };
+
+/** Icon box from the design: ~80px tall, never wider than 110px. */
+const ICON_HEIGHT = 80;
+const ICON_MAX_WIDTH = 110;
 
 const COLOR_STYLES: Record<ServiceCardColor, string> = {
   green: "bg-green text-white",
@@ -47,12 +53,13 @@ export default function ServiceFlipCard({ card }: { card: ServiceCardData }) {
     >
       <span className="relative block size-full transition-transform duration-500 ease-out transform-3d group-hover:rotate-y-180 group-data-[flipped=true]:rotate-y-180 motion-reduce:transition-none">
         {/* Front */}
-        <span className={`${face} flex flex-col justify-between px-6 pt-[30px] pb-6`}>
+        <span className={`${face} flex flex-col px-6 pt-[30px] pb-6`}>
           <span className="block font-display text-[31.1px] leading-[34.21px] font-normal">
             {card.title}
           </span>
+          {card.icon && <CardIcon icon={card.icon} />}
           {card.description && (
-            <span className="block max-w-[245px] text-[18px] leading-[1.35] font-light">
+            <span className="mt-auto block max-w-[245px] text-[18px] leading-[1.35] font-light">
               {card.description}
             </span>
           )}
@@ -77,5 +84,24 @@ export default function ServiceFlipCard({ card }: { card: ServiceCardData }) {
         </span>
       </span>
     </button>
+  );
+}
+
+/**
+ * Renders the uploaded icon as a mask filled with `currentColor`, so a single
+ * line icon matches each card's text colour (white, or near-black on yellow).
+ */
+function CardIcon({ icon }: { icon: NonNullable<ServiceCardData["icon"]> }) {
+  const ratio = icon.aspectRatio > 0 ? icon.aspectRatio : 1;
+  const width = Math.min(ICON_HEIGHT * ratio, ICON_MAX_WIDTH);
+  const height = width / ratio;
+  const mask = `url("${icon.src}") left center / contain no-repeat`;
+
+  return (
+    <span
+      aria-hidden
+      className="mt-[60px] block shrink-0 bg-current"
+      style={{ width, height, mask, WebkitMask: mask }}
+    />
   );
 }

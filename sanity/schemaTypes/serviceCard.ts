@@ -30,6 +30,15 @@ export const serviceCard = defineType({
       placeholder: "Small and mid-sized businesses",
     }),
     defineField({
+      name: "icon",
+      title: "Icon",
+      description:
+        "Single-colour line icon (SVG preferred, or PNG with a transparent background). It's automatically recoloured to match the card's text.",
+      type: "image",
+      fieldset: "front",
+      options: { accept: "image/svg+xml,image/png" },
+    }),
+    defineField({
       name: "description",
       title: "Description",
       type: "text",

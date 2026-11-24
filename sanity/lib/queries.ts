@@ -99,6 +99,8 @@ export const HOME_SERVICES_QUERY = defineQuery(`
       color,
       title,
       description,
+      "iconUrl": icon.asset->url,
+      "iconAspectRatio": icon.asset->metadata.dimensions.aspectRatio,
       services[] { _key, title, description }
     }
   }
@@ -109,6 +111,8 @@ export type ServiceCardContent = {
   color?: "green" | "yellow" | "blue" | null;
   title?: string | null;
   description?: string | null;
+  iconUrl?: string | null;
+  iconAspectRatio?: number | null;
   services?: { _key: string; title?: string | null; description?: string | null }[] | null;
 };
 
