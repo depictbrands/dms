@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useState, type MouseEvent } from "react";
 
 export type ServiceCardColor = "green" | "yellow" | "blue";
@@ -9,7 +10,7 @@ export type ServiceCardData = {
   color: ServiceCardColor;
   title: string;
   description?: string;
-  /** Uploaded in Sanity; recoloured to the card's text colour via a CSS mask. */
+  /** Uploaded in Sanity; recoloured to the card's text colour with a CSS filter. */
   icon?: { src: string; aspectRatio: number };
   services: { id: string; title?: string; description?: string }[];
 };
@@ -22,6 +23,17 @@ const COLOR_STYLES: Record<ServiceCardColor, string> = {
   green: "bg-green text-white",
   yellow: "bg-yellow text-base-black",
   blue: "bg-blue text-white",
+};
+
+/**
+ * Filters that turn any single-colour icon into the card's text colour:
+ * brightness(0) makes it solid black, then invert lifts it to white, or to
+ * ~#232323 (≈ base-black #231f20) on the yellow card.
+ */
+const ICON_FILTERS: Record<ServiceCardColor, string> = {
+  green: "brightness-0 invert",
+  yellow: "brightness-0 invert-[0.137]",
+  blue: "brightness-0 invert",
 };
 
 /**
@@ -57,7 +69,7 @@ export default function ServiceFlipCard({ card }: { card: ServiceCardData }) {
           <span className="block font-display text-[31.1px] leading-[34.21px] font-normal">
             {card.title}
           </span>
-          {card.icon && <CardIcon icon={card.icon} />}
+          {card.icon && <CardIcon icon={card.icon} color={card.color} />}
           {card.description && (
             <span className="mt-auto block max-w-[245px] text-[18px] leading-[1.35] font-light">
               {card.description}
@@ -88,20 +100,31 @@ export default function ServiceFlipCard({ card }: { card: ServiceCardData }) {
 }
 
 /**
- * Renders the uploaded icon as a mask filled with `currentColor`, so a single
- * line icon matches each card's text colour (white, or near-black on yellow).
+ * Renders the uploaded icon as a normal image recoloured with a CSS filter.
+ * (A CSS mask would need the Sanity CDN to send CORS headers for every site
+ * domain; a plain image doesn't, so this works on any deployment URL.)
  */
-function CardIcon({ icon }: { icon: NonNullable<ServiceCardData["icon"]> }) {
+function CardIcon({
+  icon,
+  color,
+}: {
+  icon: NonNullable<ServiceCardData["icon"]>;
+  color: ServiceCardColor;
+}) {
   const ratio = icon.aspectRatio > 0 ? icon.aspectRatio : 1;
-  const width = Math.min(ICON_HEIGHT * ratio, ICON_MAX_WIDTH);
-  const height = width / ratio;
-  const mask = `url("${icon.src}") left center / contain no-repeat`;
+  const width = Math.round(Math.min(ICON_HEIGHT * ratio, ICON_MAX_WIDTH));
+  const height = Math.round(width / ratio);
 
   return (
-    <span
+    <Image
+      src={icon.src}
+      alt=""
       aria-hidden
-      className="mt-[60px] block shrink-0 bg-current"
-      style={{ width, height, mask, WebkitMask: mask }}
+      width={width}
+      height={height}
+      unoptimized
+      className={`mt-[60px] block shrink-0 ${ICON_FILTERS[color]}`}
+      style={{ width, height }}
     />
   );
 }
