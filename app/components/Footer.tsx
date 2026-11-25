@@ -85,6 +85,23 @@ export default async function Footer() {
           <ContactForm />
         </div>
       </div>
+
+      {/* Padding on the outer div, border on the inner one, so the line spans
+          exactly the content width (logo's left edge to the form's right edge). */}
+      <div className="px-5 md:px-[50px] lg:pr-[127px] lg:pl-[59px]">
+        <p className="border-t border-white/15 py-5 text-[13px] leading-[1.6] text-white/70">
+          © 2026 DMS. All rights reserved. Designed and Developed by{" "}
+          <a
+            href="https://depictbrands.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-white underline-offset-4 transition-colors hover:text-yellow hover:underline focus-visible:underline focus-visible:outline-none"
+          >
+            Depict Brands
+          </a>
+          .
+        </p>
+      </div>
     </footer>
   );
 }

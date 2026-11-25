@@ -5,6 +5,16 @@ import { defineQuery } from "next-sanity";
 import { isSanityConfigured } from "../env";
 import { client } from "./client";
 
+/**
+ * Every query goes through here. `cache: "no-store"` keeps Next's fetch cache
+ * (which Vercel persists between builds) out of the way, so the tagged
+ * `"use cache"` functions below are the only cache layer — and the
+ * /api/revalidate webhook can clear them by tag the moment content is published.
+ */
+function fetchSanity<T>(query: string): Promise<T> {
+  return client.fetch<T>(query, {}, { cache: "no-store" });
+}
+
 export const HOME_HERO_QUERY = defineQuery(`
   *[_type == "homePage" && _id == "homePage"][0].hero {
     heading,
@@ -35,7 +45,7 @@ export async function getHomeHero(): Promise<HeroContent | null> {
   if (!isSanityConfigured) return null;
 
   try {
-    return await client.fetch<HeroContent | null>(HOME_HERO_QUERY);
+    return await fetchSanity<HeroContent | null>(HOME_HERO_QUERY);
   } catch (error) {
     console.error("Failed to fetch home hero from Sanity", error);
     return null;
@@ -84,7 +94,7 @@ export async function getHomeCaseStudies(): Promise<CaseStudiesContent | null> {
   if (!isSanityConfigured) return null;
 
   try {
-    return await client.fetch<CaseStudiesContent | null>(HOME_CASE_STUDIES_QUERY);
+    return await fetchSanity<CaseStudiesContent | null>(HOME_CASE_STUDIES_QUERY);
   } catch (error) {
     console.error("Failed to fetch home case studies from Sanity", error);
     return null;
@@ -129,7 +139,7 @@ export async function getHomeServices(): Promise<ServicesContent | null> {
   if (!isSanityConfigured) return null;
 
   try {
-    return await client.fetch<ServicesContent | null>(HOME_SERVICES_QUERY);
+    return await fetchSanity<ServicesContent | null>(HOME_SERVICES_QUERY);
   } catch (error) {
     console.error("Failed to fetch home services from Sanity", error);
     return null;
@@ -162,7 +172,7 @@ export async function getHomeProcess(): Promise<ProcessContent | null> {
   if (!isSanityConfigured) return null;
 
   try {
-    return await client.fetch<ProcessContent | null>(HOME_PROCESS_QUERY);
+    return await fetchSanity<ProcessContent | null>(HOME_PROCESS_QUERY);
   } catch (error) {
     console.error("Failed to fetch home process from Sanity", error);
     return null;
@@ -193,7 +203,7 @@ export async function getHomeCta(): Promise<CtaContent | null> {
   if (!isSanityConfigured) return null;
 
   try {
-    return await client.fetch<CtaContent | null>(HOME_CTA_QUERY);
+    return await fetchSanity<CtaContent | null>(HOME_CTA_QUERY);
   } catch (error) {
     console.error("Failed to fetch home CTA from Sanity", error);
     return null;
@@ -224,7 +234,7 @@ export async function getSiteSettings(): Promise<SiteSettingsContent | null> {
   if (!isSanityConfigured) return null;
 
   try {
-    return await client.fetch<SiteSettingsContent | null>(SITE_SETTINGS_QUERY);
+    return await fetchSanity<SiteSettingsContent | null>(SITE_SETTINGS_QUERY);
   } catch (error) {
     console.error("Failed to fetch site settings from Sanity", error);
     return null;
